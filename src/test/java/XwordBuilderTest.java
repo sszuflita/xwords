@@ -62,7 +62,12 @@ public class XwordBuilderTest {
     @Test
     public void testInterestingGrid() throws IOException {
         Path path = Paths.get("/Users/sszuflita/Downloads/XwiWordList.txt");
+
         CrosswordBuilder builder = CrosswordBuilder.fromPath(path);
+
+        Tile[][] tiles = ParseUtils.fromPath(Paths.get("src/test/resources/test.txt"));
+
+        Set<Crossword> crosswords = builder.solveFromGrid(new Crossword(tiles));
 
     }
 }

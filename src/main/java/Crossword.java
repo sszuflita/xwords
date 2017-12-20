@@ -93,13 +93,13 @@ public class Crossword {
             }
         }
 
-        for (int col = 0; col < height(); col++) {
+        for (int col = 0; col < width(); col++) {
 
             List<Tile> currentFill = Lists.newArrayList();
             int startRow = 0;
             int startCol = col;
 
-            for (int row = 0; row < width(); row++) {
+            for (int row = 0; row < height(); row++) {
                 Tile currentTile = getValueAtTile(row, col);
                 if (currentTile == Tile.BLACK) {
                     if (currentFill.size() > 0) {
