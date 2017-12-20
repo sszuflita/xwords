@@ -38,23 +38,32 @@ public class CrosswordBuilder {
         // remove it
 
         while (true) {
+            // parse into partials
             List<PartialFill> partialOrFull = crossword.toPartialFill();
             List<PartialFill> partialsOnly = partialOrFull.stream()
                     .filter(partialFill -> partialFill.getLetters().contains(Tile.EMPTY))
                     .collect(Collectors.toList());
+
+            // check if we're done
             if (partialsOnly.isEmpty()) {
                 break;
             }
+
+            // choose a partial to fill
             PartialFill partialFill = partialsOnly.iterator().next();
 
+            // find all valid fills
             List<String> validFillOptions = validWords.stream()
                     .filter(word -> matches(word, partialFill))
                     .collect(Collectors.toList());
 
+            // choose one
             String validFill = validFillOptions.get(0);
 
+            // fill it
             fillPartial(partialFill, validFill, crossword);
 
+            // check if puzzle is valid
             Set<PartialFill> allFill = crossword.toPartialFill().stream()
                     .filter(fill -> !fill.getLetters().contains(Tile.EMPTY))
                     .collect(Collectors.toSet());
