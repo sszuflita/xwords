@@ -1,12 +1,11 @@
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -30,24 +29,37 @@ public class CrosswordBuilder {
                         .collect(Collectors.toList()));
     }
 
-    public List<Crossword> solveFromGrid(Crossword crossword) {
+    public Set<Crossword> solveFromGrid(Crossword base) {
 
         // check all fill is valid
         // find fill to add
         // add it
         // remove it
 
-        while (true) {
+        //Deque<Crossword> incompleteGrids = new ArrayDeque<>();
+
+        Queue<Crossword> incompleteGrids = new PriorityQueue<>(new Comparator<Crossword>() {
+            @Override
+            public int compare(Crossword o1, Crossword o2) {
+
+                return o2.filledTiles() - o1.filledTiles();
+            }
+        });
+        Set<Crossword> visitedGrids = Sets.newHashSet();
+        incompleteGrids.add(base);
+
+        Set<Crossword> completeGrids = Sets.newHashSet();
+
+        while (!incompleteGrids.isEmpty()) {
+
+            Crossword crossword = incompleteGrids.poll();
+            visitedGrids.add(crossword);
+
             // parse into partials
             List<PartialFill> partialOrFull = crossword.toPartialFill();
             List<PartialFill> partialsOnly = partialOrFull.stream()
                     .filter(partialFill -> partialFill.getLetters().contains(Tile.EMPTY))
                     .collect(Collectors.toList());
-
-            // check if we're done
-            if (partialsOnly.isEmpty()) {
-                break;
-            }
 
             // choose a partial to fill
             PartialFill partialFill = partialsOnly.iterator().next();
@@ -55,49 +67,40 @@ public class CrosswordBuilder {
             // find all valid fills
             List<String> validFillOptions = validWords.stream()
                     .filter(word -> matches(word, partialFill))
+                    .limit(1000)
                     .collect(Collectors.toList());
 
-            // choose one
-            String validFill = validFillOptions.get(0);
 
-            // fill it
-            fillPartial(partialFill, validFill, crossword);
-
-            // check if puzzle is valid
-            Set<PartialFill> allFill = crossword.toPartialFill().stream()
-                    .filter(fill -> !fill.getLetters().contains(Tile.EMPTY))
+            Set<Crossword> potentialCrosswords = validFillOptions.parallelStream()
+                    .map(fill -> crossword.withPartialFill(partialFill, fill))
+                    .filter(potentialCrossword -> !visitedGrids.contains(potentialCrossword))
+                    .filter(potentialCrossword ->
+                            potentialCrossword.toPartialFill().stream()
+                                    .filter(partial -> !partial.getLetters().contains(Tile.EMPTY))
+                                    .map(PartialFill::toString)
+                                    .allMatch(word -> validWords.contains(word)))
                     .collect(Collectors.toSet());
 
-            Set<PartialFill> allValidFill = allFill.stream()
-                    .filter(fill -> validWords.contains(fill.toString()))
-                    .collect(Collectors.toSet());
+            // identify complete crosswords
+            Set<Crossword> newlyCompletedCrosswords = potentialCrosswords.stream()
+                    .filter(potentialCrossword -> potentialCrossword.toPartialFill().stream()
+                            .noneMatch(fill -> fill.getLetters().contains(Tile.EMPTY))).collect(Collectors.toSet());
 
-            if (!(allFill.size() == allValidFill.size())) {
-                throw new IllegalStateException("Need to undo last move.");
+            completeGrids.addAll(newlyCompletedCrosswords);
+
+            if (completeGrids.size() > 10) {
+                break;
             }
+
+            Set<Crossword> newIncompleteGrids = Sets.difference(potentialCrosswords, newlyCompletedCrosswords);
+
+            incompleteGrids.addAll(newIncompleteGrids);
         }
 
 
-        return ImmutableList.of(crossword);
+        return completeGrids;
     }
 
-    private void fillPartial(PartialFill partialFill, String validFill, Crossword crossword) {
-        if (partialFill.getOrientation() == Orientation.DOWN) {
-            int col = partialFill.getStartCol();
-            int startRow = partialFill.getStartRow();
-            for (int idx = 0; idx < validFill.length(); idx++) {
-                Tile tile = Tile.valueOf(validFill.substring(idx, idx + 1));
-                crossword.setValueAtTile(startRow + idx, col, tile);
-            }
-        } else {
-            int row = partialFill.getStartRow();
-            int startCol = partialFill.getStartCol();
-            for (int idx = 0; idx < validFill.length(); idx++) {
-                Tile tile = Tile.valueOf(validFill.substring(idx, idx + 1));
-                crossword.setValueAtTile(row, startCol + idx, tile);
-            }
-        }
-    }
 
     boolean matches(String word, PartialFill partialFill) {
         if (word.length() != partialFill.getLetters().size()) {

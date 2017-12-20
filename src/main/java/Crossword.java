@@ -11,8 +11,16 @@ public class Crossword {
         this.tiles = tiles;
     }
 
-    public Tile[][] getTiles() {
-        return tiles;
+    public int filledTiles() {
+        int count = 0;
+        for (int row = 0; row < height(); row++) {
+            for (int col = 0; col < width(); col++) {
+                if (!getValueAtTile(row, col).equals(Tile.EMPTY)) {
+                    count++;
+                }
+            }
+        }
+        return count;
     }
 
     int width() {
@@ -27,9 +35,37 @@ public class Crossword {
         return tiles[row][col];
     }
 
-    void setValueAtTile(int row, int col, Tile tile) {
+    private void setValueAtTile(int row, int col, Tile tile) {
         tiles[row][col] = tile;
     }
+
+    public Crossword withPartialFill(PartialFill partialFill, String validWord) {
+        Tile[][] newTiles = new Tile[height()][width()];
+        for (int row = 0; row < height(); row++) {
+            System.arraycopy(tiles[row], 0, newTiles[row], 0, width());
+        }
+        fillPartial(partialFill, validWord, newTiles);
+        return new Crossword(newTiles);
+    }
+
+    private void fillPartial(PartialFill partialFill, String validFill, Tile[][] otherTiles) {
+        if (partialFill.getOrientation() == Orientation.DOWN) {
+            int col = partialFill.getStartCol();
+            int startRow = partialFill.getStartRow();
+            for (int idx = 0; idx < validFill.length(); idx++) {
+                Tile tile = Tile.valueOf(validFill.substring(idx, idx + 1));
+                otherTiles[startRow + idx][col] = tile;
+            }
+        } else {
+            int row = partialFill.getStartRow();
+            int startCol = partialFill.getStartCol();
+            for (int idx = 0; idx < validFill.length(); idx++) {
+                Tile tile = Tile.valueOf(validFill.substring(idx, idx + 1));
+                otherTiles[row][startCol + idx] = tile;
+            }
+        }
+    }
+
 
     public List<PartialFill> toPartialFill() {
         List<PartialFill> result = Lists.newArrayList();
