@@ -15,9 +15,9 @@ import java.util.stream.IntStream;
 public class CrosswordBuilder {
     Logger log = LoggerFactory.getLogger(CrosswordBuilder.class);
 
-    private List<String> validWords;
+    private Set<String> validWords;
 
-    public CrosswordBuilder(List<String> validWords) {
+    public CrosswordBuilder(Set<String> validWords) {
         this.validWords = validWords;
     }
 
@@ -26,7 +26,7 @@ public class CrosswordBuilder {
                 Files.lines(path)
                         .map(word -> word.split(";")[0])
                         .map(String::toUpperCase)
-                        .collect(Collectors.toList()));
+                        .collect(Collectors.toSet()));
     }
 
     public Set<Crossword> solveFromGrid(Crossword base) {
@@ -38,13 +38,7 @@ public class CrosswordBuilder {
 
         //Deque<Crossword> incompleteGrids = new ArrayDeque<>();
 
-        Queue<Crossword> incompleteGrids = new PriorityQueue<>(new Comparator<Crossword>() {
-            @Override
-            public int compare(Crossword o1, Crossword o2) {
-
-                return o2.filledTiles() - o1.filledTiles();
-            }
-        });
+        Queue<Crossword> incompleteGrids = new PriorityQueue<>((o1, o2) -> o2.filledTiles() - o1.filledTiles());
         Set<Crossword> visitedGrids = Sets.newHashSet();
         incompleteGrids.add(base);
 
@@ -67,7 +61,6 @@ public class CrosswordBuilder {
             // find all valid fills
             List<String> validFillOptions = validWords.stream()
                     .filter(word -> matches(word, partialFill))
-                    .limit(1000)
                     .collect(Collectors.toList());
 
 
