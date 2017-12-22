@@ -1,6 +1,10 @@
 import com.google.common.collect.ImmutableList;
 import org.junit.Assert;
 import org.junit.Test;
+import xwords.Crossword;
+import xwords.Orientation;
+import xwords.PartialFill;
+import xwords.Tile;
 
 public class CrosswordTest {
 

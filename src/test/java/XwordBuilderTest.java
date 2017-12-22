@@ -5,6 +5,10 @@
 import com.google.common.base.Stopwatch;
 import org.junit.Assert;
 import org.junit.Test;
+import xwords.Crossword;
+import xwords.CrosswordBuilder;
+import xwords.ParseUtils;
+import xwords.Tile;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -76,6 +80,7 @@ public class XwordBuilderTest {
             Set<Crossword> crosswords = builder.solveFromGrid(new Crossword(tiles));
             started.stop();
             total_time += started.elapsed(TimeUnit.MILLISECONDS);
+            System.out.println(crosswords.iterator().next());
         }
         System.out.println(total_time / num_trials);
     }
