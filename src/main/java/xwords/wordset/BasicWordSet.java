@@ -36,6 +36,6 @@ public class BasicWordSet implements WordSet {
 
     @Override
     public boolean isWordValid(String word) {
-        return false;
+        return validWords.contains(word);
     }
 }
