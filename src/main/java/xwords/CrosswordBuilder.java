@@ -37,13 +37,6 @@ public class CrosswordBuilder {
 
     public Set<Crossword> solveFromGrid(Crossword base) {
 
-        // check all fill is valid
-        // find fill to add
-        // add it
-        // remove it
-
-        //Deque<Crossword> incompleteGrids = new ArrayDeque<>();
-
         Queue<Crossword> incompleteGrids = new PriorityQueue<>((o1, o2) -> o2.filledTiles() - o1.filledTiles());
         Set<Crossword> visitedGrids = Sets.newHashSet();
         incompleteGrids.add(base);
