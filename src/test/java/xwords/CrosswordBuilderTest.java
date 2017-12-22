@@ -62,21 +62,21 @@ public class CrosswordBuilderTest {
     }
 
     @Test
-    public void testInterestingGrid() throws IOException {
+    public void test3by3grid() throws IOException {
         Path path = Paths.get("/Users/sszuflita/Downloads/XwiWordList.txt");
 
         CrosswordBuilder builder = CrosswordBuilder.fromPath(path);
 
-        Tile[][] tiles = ParseUtils.fromPath(Paths.get("src/test/resources/test.txt"));
+        Tile[][] tiles = ParseUtils.fromPath(Paths.get("src/test/resources/3by3.txt"));
 
-        int num_trials = 1;
+        int num_trials = 5;
         long total_time = 0L;
         for (int i = 0; i < num_trials; i++) {
             Stopwatch started = Stopwatch.createStarted();
             Set<Crossword> crosswords = builder.solveFromGrid(new Crossword(tiles));
             started.stop();
             total_time += started.elapsed(TimeUnit.MILLISECONDS);
-            System.out.println(crosswords.iterator().next());
+            Assert.assertTrue(!crosswords.isEmpty());
         }
         System.out.println(total_time / num_trials);
     }
