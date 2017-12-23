@@ -12,6 +12,8 @@ import java.util.concurrent.TimeUnit;
 
 public class CrosswordBuilderBenchmarks {
 
+    int numberOfTrials = 1;
+
     @Test
     public void test3by3grid() throws IOException {
         Path path = Paths.get("/Users/sszuflita/Downloads/XwiWordList.txt");
@@ -20,7 +22,6 @@ public class CrosswordBuilderBenchmarks {
 
         Tile[] tiles = ParseUtils.fromPath(Paths.get("src/test/resources/3by3.txt"));
 
-        int numberOfTrials = 5;
         long totalTime= runTestInTrials(builder, tiles, 3, 3, numberOfTrials);
         System.out.println(totalTime / numberOfTrials);
     }
@@ -33,7 +34,6 @@ public class CrosswordBuilderBenchmarks {
 
         Tile[] tiles = ParseUtils.fromPath(Paths.get("src/test/resources/4by4.txt"));
 
-        int numberOfTrials = 5;
         long totalTime = runTestInTrials(builder, tiles, 4, 4, numberOfTrials);
         System.out.println(totalTime / numberOfTrials);
     }
@@ -46,7 +46,6 @@ public class CrosswordBuilderBenchmarks {
 
         Tile[] tiles = ParseUtils.fromPath(Paths.get("src/test/resources/5by5.txt"));
 
-        int numberOfTrials = 5;
         long totalTime = runTestInTrials(builder, tiles, 5, 5, numberOfTrials);
         System.out.println(totalTime / numberOfTrials);
     }
@@ -59,7 +58,6 @@ public class CrosswordBuilderBenchmarks {
 
         Tile[] tiles = ParseUtils.fromPath(Paths.get("src/test/resources/interestingGrid.txt"));
 
-        int numberOfTrials = 5;
         long totalTime = runTestInTrials(builder, tiles, 8, 8, numberOfTrials);
         System.out.println(totalTime / numberOfTrials);
     }
@@ -72,7 +70,6 @@ public class CrosswordBuilderBenchmarks {
 
         Tile[] tiles = ParseUtils.fromPath(Paths.get("src/test/resources/todaysPuz.txt"));
 
-        int numberOfTrials = 5;
         long totalTime = runTestInTrials(builder, tiles, 15, 15, numberOfTrials);
         System.out.println(totalTime / numberOfTrials);
     }

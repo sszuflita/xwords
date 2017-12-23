@@ -13,9 +13,11 @@ public class TrieWordSet implements WordSet {
 
 
     private final TrieNode root;
+    private final Set<String> validWords;
 
     public TrieWordSet(Set<String> validWords) {
         this.root = buildTrie(validWords);
+        this.validWords = validWords;
     }
 
     private TrieNode buildTrie(Set<String> validWords) {
@@ -53,6 +55,14 @@ public class TrieWordSet implements WordSet {
             return Stream.of(node.prefix());
         }
         if (tiles.isEmpty() && !node.isWord()) {
+            return Stream.empty();
+        }
+
+        if (!tiles.contains(Tile.EMPTY)) {
+            String potentialString = node.prefix() + tiles.stream().map(Tile::toString).collect(Collectors.joining());
+            if (validWords.contains(potentialString)) {
+                return Stream.of(potentialString);
+            }
             return Stream.empty();
         }
         Tile tile = tiles.get(0);

@@ -4,8 +4,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import xwords.wordset.BasicWordSet;
 import xwords.wordset.WordSet;
+import xwords.wordset.trie.TrieWordSet;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -27,7 +27,7 @@ public class CrosswordBuilder {
 
     public static CrosswordBuilder fromPath(Path path) throws IOException {
         return new CrosswordBuilder(
-                new BasicWordSet(Files.lines(path)
+                new TrieWordSet(Files.lines(path)
                         .map(word -> word.split(";")[0])
                         .map(String::toUpperCase)
                         .collect(Collectors.toSet())));
