@@ -25,7 +25,7 @@ public class CrosswordBuilderBenchmarks {
         System.out.println(totalTime / numberOfTrials);
     }
 
-        @Test
+    @Test
     public void test4by4grid() throws IOException {
         Path path = Paths.get("/Users/sszuflita/Downloads/XwiWordList.txt");
 
@@ -34,7 +34,20 @@ public class CrosswordBuilderBenchmarks {
         Tile[] tiles = ParseUtils.fromPath(Paths.get("src/test/resources/4by4.txt"));
 
         int numberOfTrials = 5;
-        long totalTime = runTestInTrials(builder, tiles, 4, 4, 5);
+        long totalTime = runTestInTrials(builder, tiles, 4, 4, 15);
+        System.out.println(totalTime / numberOfTrials);
+    }
+
+    @Test
+    public void test5by5grid() throws IOException {
+        Path path = Paths.get("/Users/sszuflita/Downloads/XwiWordList.txt");
+
+        CrosswordBuilder builder = CrosswordBuilder.fromPath(path);
+
+        Tile[] tiles = ParseUtils.fromPath(Paths.get("src/test/resources/5by5.txt"));
+
+        int numberOfTrials = 5;
+        long totalTime = runTestInTrials(builder, tiles, 5, 5, 5);
         System.out.println(totalTime / numberOfTrials);
     }
 
