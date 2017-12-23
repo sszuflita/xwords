@@ -1,5 +1,6 @@
 package xwords;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,8 +38,8 @@ public class CrosswordBuilder {
     }
 
     private static Double ratioOfCompleteness(PartialFill fill) {
-        return -1. * fill.getLetters().stream()
-                .filter(CrosswordBuilder::tileIsNotEmpty).count() / fill.getLetters().size();
+        return -1. * fill.getTiles().stream()
+                .filter(CrosswordBuilder::tileIsNotEmpty).count() / fill.getTiles().size();
     }
 
     private static boolean tileIsNotEmpty(Tile tile) {
@@ -58,34 +59,42 @@ public class CrosswordBuilder {
 
         Set<Crossword> completeGrids = Sets.newHashSet();
 
+        int parallelismFactor = 8;
+
         while (!incompleteGrids.isEmpty() && completeGrids.size() < 1) {
 
-            Crossword crossword = incompleteGrids.poll();
-            visitedGrids.add(crossword);
+            List<Crossword> toVisit = Lists.newArrayList();
 
-            // parse into partials
-            List<PartialFill> partialOrFull = crossword.toPartialFill();
-            List<PartialFill> partialsOnly = partialOrFull.stream()
-                    .filter(CrosswordBuilder::fillIsIncomplete)
-                    .collect(Collectors.toList());
+            for (int i = 0; i < parallelismFactor; i++) {
+                Crossword maybeCrossword = incompleteGrids.poll();
+                if (maybeCrossword != null) {
+                    toVisit.add(maybeCrossword);
+                    visitedGrids.add(maybeCrossword);
+                }
+            }
 
-            // choose a partial to fill
-            PartialFill partialFill = partialsOnly.stream().sorted(
-                    Comparator.comparing(CrosswordBuilder::ratioOfCompleteness))
-                    .findFirst().get();
+            Set<Crossword> potentialCrosswords = toVisit.parallelStream().flatMap(crossword -> {
+                // parse into partials
+                List<PartialFill> partialOrFull = crossword.toPartialFill();
+                List<PartialFill> partialsOnly = partialOrFull.stream()
+                        .filter(CrosswordBuilder::fillIsIncomplete)
+                        .collect(Collectors.toList());
 
+                // choose a partial to fill
+                PartialFill partialFill = partialsOnly.stream()
+                        .min(Comparator.comparing(CrosswordBuilder::ratioOfCompleteness))
+                        .get();
 
-            // find all valid fills
-            Set<String> validFillOptions = wordSet.validWords(partialFill);
+                // find all valid fills
+                Set<String> validFillOptions = wordSet.validWords(partialFill);
 
-            Set<Crossword> potentialCrosswords = validFillOptions.parallelStream()
-                    .map(fill -> crossword.withPartialFill(partialFill, fill))
-                    .filter(potentialCrossword -> !visitedGrids.contains(potentialCrossword))
-                    .filter(this::allCompleteFillIsValid)
-                    .collect(Collectors.toSet());
-
+                return validFillOptions.parallelStream()
+                        .map(fill -> crossword.withPartialFill(partialFill, fill))
+                        .filter(potentialCrossword -> !visitedGrids.contains(potentialCrossword))
+                        .filter(potentialCrossword -> allCompleteFillIsValid(potentialCrossword));
+            }).collect(Collectors.toSet());
             // identify complete crosswords
-            Set<Crossword> newlyCompletedCrosswords = potentialCrosswords.stream()
+            Set<Crossword> newlyCompletedCrosswords = potentialCrosswords.parallelStream()
                     .filter(CrosswordBuilder::gridIsComplete).collect(Collectors.toSet());
 
             completeGrids.addAll(newlyCompletedCrosswords);
@@ -99,13 +108,12 @@ public class CrosswordBuilder {
     }
 
 
-
     private static boolean fillIsIncomplete(PartialFill partialFill) {
-        return partialFill.getLetters().contains(Tile.EMPTY);
+        return partialFill.getTiles().contains(Tile.EMPTY);
     }
 
     private static boolean fillIsComplete(PartialFill fill) {
-        return !fill.getLetters().contains(Tile.EMPTY);
+        return !fill.getTiles().contains(Tile.EMPTY);
     }
 
     private boolean allCompleteFillIsValid(Crossword potentialCrossword) {

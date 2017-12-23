@@ -16,7 +16,7 @@ public class PartialFill {
         this.orientation = orientation;
     }
 
-    public List<Tile> getLetters() {
+    public List<Tile> getTiles() {
         return letters;
     }
 
