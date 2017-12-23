@@ -51,6 +51,19 @@ public class CrosswordBuilderBenchmarks {
         System.out.println(totalTime / numberOfTrials);
     }
 
+    @Test
+    public void testInterestingGrid() throws IOException {
+        Path path = Paths.get("/Users/sszuflita/Downloads/XwiWordList.txt");
+
+        CrosswordBuilder builder = CrosswordBuilder.fromPath(path);
+
+        Tile[] tiles = ParseUtils.fromPath(Paths.get("src/test/resources/interestingGrid.txt"));
+
+        int numberOfTrials = 5;
+        long totalTime = runTestInTrials(builder, tiles, 8, 8, numberOfTrials);
+        System.out.println(totalTime / numberOfTrials);
+    }
+
     private long runTestInTrials(CrosswordBuilder builder, Tile[] tiles, int width, int height, int num_trials) {
         long totalTime = 0L;
         for (int i = 0; i < num_trials; i++) {
