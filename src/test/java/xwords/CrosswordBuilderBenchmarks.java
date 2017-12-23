@@ -63,12 +63,24 @@ public class CrosswordBuilderBenchmarks {
     }
 
     @Test
-    public void testTodaysPuz() throws IOException {
+    public void testMondaysPuz() throws IOException {
         Path path = Paths.get("/Users/sszuflita/Downloads/XwiWordList.txt");
 
         CrosswordBuilder builder = CrosswordBuilder.fromPath(path);
 
-        Tile[] tiles = ParseUtils.fromPath(Paths.get("src/test/resources/todaysPuz.txt"));
+        Tile[] tiles = ParseUtils.fromPath(Paths.get("src/test/resources/mondaysPuz.txt"));
+
+        long totalTime = runTestInTrials(builder, tiles, 15, 15, numberOfTrials);
+        System.out.println(totalTime / numberOfTrials);
+    }
+
+    @Test
+    public void testFridaysPuz() throws IOException {
+        Path path = Paths.get("/Users/sszuflita/Downloads/XwiWordList.txt");
+
+        CrosswordBuilder builder = CrosswordBuilder.fromPath(path);
+
+        Tile[] tiles = ParseUtils.fromPath(Paths.get("src/test/resources/fridaysPuz.txt"));
 
         long totalTime = runTestInTrials(builder, tiles, 15, 15, numberOfTrials);
         System.out.println(totalTime / numberOfTrials);
