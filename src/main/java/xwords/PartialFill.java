@@ -1,6 +1,7 @@
 package xwords;
 
 import java.util.List;
+import java.util.Objects;
 
 public class PartialFill {
 
@@ -39,5 +40,19 @@ public class PartialFill {
 
     public Orientation getOrientation() {
         return orientation;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PartialFill that = (PartialFill) o;
+        return Objects.equals(letters, that.letters);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(letters);
     }
 }

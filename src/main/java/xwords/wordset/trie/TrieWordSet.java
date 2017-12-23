@@ -80,7 +80,7 @@ public class TrieWordSet implements WordSet {
     }
 
     @Override
-    public boolean isWordFeasible(PartialFill partialFill) {
+    public boolean isFillFeasible(PartialFill partialFill) {
         return validWordsStream(partialFill.getTiles(), root).findAny().isPresent();
     }
 

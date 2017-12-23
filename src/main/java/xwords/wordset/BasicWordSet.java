@@ -38,7 +38,7 @@ public class BasicWordSet implements WordSet {
     }
 
     @Override
-    public boolean isWordFeasible(PartialFill partialFill) {
+    public boolean isFillFeasible(PartialFill partialFill) {
         if (!partialFill.getTiles().contains(Tile.EMPTY)) {
             return validWords.get(partialFill.getTiles().size()).contains(partialFill.toString());
         }

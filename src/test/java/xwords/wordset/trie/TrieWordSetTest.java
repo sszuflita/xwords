@@ -16,7 +16,7 @@ public class TrieWordSetTest {
     public void wordSetWorks() {
         TrieWordSet trieWordSet = new TrieWordSet(ImmutableSet.of("abc", "aba", "abcd"));
 
-        Assert.assertTrue(trieWordSet.isWordFeasible(new PartialFill(
+        Assert.assertTrue(trieWordSet.isFillFeasible(new PartialFill(
                 ImmutableList.of(Tile.A, Tile.B, Tile.C), 0, 0, Orientation.ACROSS)));
 
         Set<String> strings = trieWordSet.validWords(new PartialFill(

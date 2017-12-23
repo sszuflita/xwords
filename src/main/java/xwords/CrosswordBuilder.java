@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import xwords.wordset.CachingWordSet;
 import xwords.wordset.WordSet;
 import xwords.wordset.trie.TrieWordSet;
 
@@ -27,10 +28,11 @@ public class CrosswordBuilder {
 
     public static CrosswordBuilder fromPath(Path path) throws IOException {
         return new CrosswordBuilder(
-                new TrieWordSet(Files.lines(path)
-                        .map(word -> word.split(";")[0])
-                        .map(String::toUpperCase)
-                        .collect(Collectors.toSet())));
+                new CachingWordSet(
+                        new TrieWordSet(Files.lines(path)
+                                .map(word -> word.split(";")[0])
+                                .map(String::toUpperCase)
+                                .collect(Collectors.toSet()))));
     }
 
     private static int compare(Crossword o1, Crossword o2) {
@@ -118,6 +120,6 @@ public class CrosswordBuilder {
 
     private boolean allFillIsValid(Crossword potentialCrossword) {
         return potentialCrossword.toPartialFill().stream()
-                .allMatch(wordSet::isWordFeasible);
+                .allMatch(wordSet::isFillFeasible);
     }
 }
