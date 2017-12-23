@@ -3,17 +3,17 @@ package xwords.wordset;
 import xwords.PartialFill;
 import xwords.Tile;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class BasicWordSet implements WordSet {
 
-    private final Map<Integer, List<String>> validWords;
+    private final Map<Integer, Set<String>> validWords;
 
     public BasicWordSet(Set<String> validWords) {
-        this.validWords = validWords.stream().collect(Collectors.groupingBy(String::length));
+        this.validWords = validWords.stream()
+                .collect(Collectors.groupingBy(String::length, Collectors.toSet()));
     }
 
     @Override
@@ -38,7 +38,12 @@ public class BasicWordSet implements WordSet {
     }
 
     @Override
-    public boolean isWordValid(String word) {
-        return validWords.get(word.length()).contains(word);
+    public boolean isWordFeasible(PartialFill partialFill) {
+        if (!partialFill.getTiles().contains(Tile.EMPTY)) {
+            return validWords.get(partialFill.getTiles().size()).contains(partialFill.toString());
+        }
+
+        return validWords.get(partialFill.getTiles().size()).stream()
+                .anyMatch(validWord -> matches(validWord, partialFill));
     }
 }

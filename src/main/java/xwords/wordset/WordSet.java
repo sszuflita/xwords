@@ -8,5 +8,5 @@ public interface WordSet {
 
     Set<String> validWords(PartialFill partialFill);
 
-    boolean isWordValid(String word);
+    boolean isWordFeasible(PartialFill partialFill);
 }

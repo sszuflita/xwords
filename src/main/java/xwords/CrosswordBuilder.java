@@ -91,7 +91,7 @@ public class CrosswordBuilder {
                 return validFillOptions.parallelStream()
                         .map(fill -> crossword.withPartialFill(partialFill, fill))
                         .filter(potentialCrossword -> !visitedGrids.contains(potentialCrossword))
-                        .filter(potentialCrossword -> allCompleteFillIsValid(potentialCrossword));
+                        .filter(potentialCrossword -> allFillIsValid(potentialCrossword));
             }).collect(Collectors.toSet());
             // identify complete crosswords
             Set<Crossword> newlyCompletedCrosswords = potentialCrosswords.parallelStream()
@@ -116,10 +116,8 @@ public class CrosswordBuilder {
         return !fill.getTiles().contains(Tile.EMPTY);
     }
 
-    private boolean allCompleteFillIsValid(Crossword potentialCrossword) {
+    private boolean allFillIsValid(Crossword potentialCrossword) {
         return potentialCrossword.toPartialFill().stream()
-                .filter(CrosswordBuilder::fillIsComplete)
-                .map(PartialFill::toString)
-                .allMatch(wordSet::isWordValid);
+                .allMatch(wordSet::isWordFeasible);
     }
 }
