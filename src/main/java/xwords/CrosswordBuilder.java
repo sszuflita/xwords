@@ -36,8 +36,8 @@ public class CrosswordBuilder {
         return o2.filledTiles() - o1.filledTiles();
     }
 
-    private static Long ratioOfCompleteness(PartialFill fill) {
-        return fill.getLetters().stream()
+    private static Double ratioOfCompleteness(PartialFill fill) {
+        return -1. * fill.getLetters().stream()
                 .filter(CrosswordBuilder::tileIsNotEmpty).count() / fill.getLetters().size();
     }
 
