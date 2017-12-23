@@ -7,10 +7,14 @@ import java.util.List;
 
 public class Crossword {
 
-    private final Tile[][] tiles;
+    private final Tile[] tiles;
+    private final int height;
+    private final int width;
 
-    public Crossword(Tile[][] tiles) {
+    public Crossword(Tile[] tiles, int height, int width) {
         this.tiles = tiles;
+        this.height = height;
+        this.width = width;
     }
 
     public int filledTiles() {
@@ -26,44 +30,42 @@ public class Crossword {
     }
 
     int width() {
-        return tiles[0].length;
+        return width;
     }
 
     int height() {
-        return tiles.length;
+        return height;
     }
 
     Tile getValueAtTile(int row, int col) {
-        return tiles[row][col];
+        return tiles[row * width + col];
     }
 
     private void setValueAtTile(int row, int col, Tile tile) {
-        tiles[row][col] = tile;
+        tiles[row * width + col] = tile;
     }
 
     public Crossword withPartialFill(PartialFill partialFill, String validWord) {
-        Tile[][] newTiles = new Tile[height()][width()];
-        for (int row = 0; row < height(); row++) {
-            System.arraycopy(tiles[row], 0, newTiles[row], 0, width());
-        }
+        Tile[] newTiles = new Tile[width * height];
+        System.arraycopy(tiles, 0, newTiles, 0, width * height);
         fillPartial(partialFill, validWord, newTiles);
-        return new Crossword(newTiles);
+        return new Crossword(newTiles, height, width);
     }
 
-    private void fillPartial(PartialFill partialFill, String validFill, Tile[][] otherTiles) {
+    private void fillPartial(PartialFill partialFill, String validFill, Tile[] otherTiles) {
         if (partialFill.getOrientation() == Orientation.DOWN) {
             int col = partialFill.getStartCol();
             int startRow = partialFill.getStartRow();
             for (int idx = 0; idx < validFill.length(); idx++) {
                 Tile tile = Tile.valueOf(validFill.substring(idx, idx + 1));
-                otherTiles[startRow + idx][col] = tile;
+                otherTiles[(startRow + idx) * width + col] = tile;
             }
         } else {
             int row = partialFill.getStartRow();
             int startCol = partialFill.getStartCol();
             for (int idx = 0; idx < validFill.length(); idx++) {
                 Tile tile = Tile.valueOf(validFill.substring(idx, idx + 1));
-                otherTiles[row][startCol + idx] = tile;
+                otherTiles[row * width + (startCol + idx)] = tile;
             }
         }
     }
@@ -140,15 +142,7 @@ public class Crossword {
         if (o == null || getClass() != o.getClass()) return false;
         Crossword crossword = (Crossword) o;
 
-        if (tiles.length != crossword.tiles.length) {
-            return false;
-        }
-        for (int i = 0; i < tiles.length; i++) {
-            if (!Arrays.equals(tiles[i], crossword.tiles[i])) {
-                return false;
-            }
-        }
-        return true;
+        return Arrays.equals(tiles, crossword.tiles);
     }
 
     @Override

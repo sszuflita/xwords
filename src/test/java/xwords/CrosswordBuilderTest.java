@@ -16,13 +16,13 @@ public class CrosswordBuilderTest {
         Path path = Paths.get("/Users/sszuflita/Downloads/XwiWordList.txt");
         CrosswordBuilder builder = CrosswordBuilder.fromPath(path);
 
-        Tile[][] base = new Tile[][]{
-                new Tile[]{ Tile.EMPTY, Tile.EMPTY, Tile.EMPTY},
-                new Tile[]{ Tile.EMPTY, Tile.EMPTY, Tile.EMPTY},
-                new Tile[]{ Tile.EMPTY, Tile.EMPTY, Tile.EMPTY}
+        Tile[] base = new Tile[]{
+                Tile.EMPTY, Tile.EMPTY, Tile.EMPTY,
+                Tile.EMPTY, Tile.EMPTY, Tile.EMPTY,
+                Tile.EMPTY, Tile.EMPTY, Tile.EMPTY
         };
 
-        Set<Crossword> crosswords = builder.solveFromGrid(new Crossword(base));
+        Set<Crossword> crosswords = builder.solveFromGrid(new Crossword(base, 3, 3));
 
         Assert.assertTrue(crosswords.size() > 0);
     }
@@ -32,13 +32,13 @@ public class CrosswordBuilderTest {
         Path path = Paths.get("/Users/sszuflita/Downloads/XwiWordList.txt");
         CrosswordBuilder builder = CrosswordBuilder.fromPath(path);
 
-        Tile[][] base = new Tile[][]{
-                new Tile[]{ Tile.A, Tile.EMPTY, Tile.EMPTY},
-                new Tile[]{ Tile.EMPTY, Tile.EMPTY, Tile.EMPTY},
-                new Tile[]{ Tile.EMPTY, Tile.EMPTY, Tile.EMPTY}
+        Tile[] base = new Tile[]{
+                Tile.A, Tile.EMPTY, Tile.EMPTY,
+                Tile.EMPTY, Tile.EMPTY, Tile.EMPTY,
+                Tile.EMPTY, Tile.EMPTY, Tile.EMPTY
         };
 
-      Set<Crossword> crosswords = builder.solveFromGrid(new Crossword(base));
+      Set<Crossword> crosswords = builder.solveFromGrid(new Crossword(base, 3, 3));
 
       Assert.assertTrue(crosswords.size() > 0);
     }
@@ -48,13 +48,13 @@ public class CrosswordBuilderTest {
         Path path = Paths.get("/Users/sszuflita/Downloads/XwiWordList.txt");
         CrosswordBuilder builder = CrosswordBuilder.fromPath(path);
 
-        Tile[][] base = new Tile[][]{
-                new Tile[]{ Tile.B, Tile.EMPTY, Tile.EMPTY},
-                new Tile[]{ Tile.EMPTY, Tile.EMPTY, Tile.EMPTY},
-                new Tile[]{ Tile.R, Tile.EMPTY, Tile.EMPTY}
+        Tile[] base = new Tile[]{
+                Tile.B, Tile.EMPTY, Tile.EMPTY,
+                Tile.EMPTY, Tile.EMPTY, Tile.EMPTY,
+                Tile.R, Tile.EMPTY, Tile.EMPTY
         };
 
-        Set<Crossword> crosswords = builder.solveFromGrid(new Crossword(base));
+        Set<Crossword> crosswords = builder.solveFromGrid(new Crossword(base, 3, 3));
 
         Assert.assertTrue(crosswords.size() > 0);
     }

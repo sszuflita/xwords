@@ -51,7 +51,7 @@ public class CrosswordBuilder {
             // parse into partials
             List<PartialFill> partialOrFull = crossword.toPartialFill();
             List<PartialFill> partialsOnly = partialOrFull.stream()
-                    .filter(partialFill -> partialFill.getLetters().contains(Tile.EMPTY))
+                    .filter(CrosswordBuilder::isIncomplete)
                     .collect(Collectors.toList());
 
             // choose a partial to fill
@@ -65,7 +65,7 @@ public class CrosswordBuilder {
                     .filter(potentialCrossword -> !visitedGrids.contains(potentialCrossword))
                     .filter(potentialCrossword ->
                             potentialCrossword.toPartialFill().stream()
-                                    .filter(partial -> !partial.getLetters().contains(Tile.EMPTY))
+                                    .filter(CrosswordBuilder::isComplete)
                                     .map(PartialFill::toString)
                                     .allMatch(wordSet::isWordValid))
                     .collect(Collectors.toSet());
@@ -73,7 +73,7 @@ public class CrosswordBuilder {
             // identify complete crosswords
             Set<Crossword> newlyCompletedCrosswords = potentialCrosswords.stream()
                     .filter(potentialCrossword -> potentialCrossword.toPartialFill().stream()
-                            .noneMatch(fill -> fill.getLetters().contains(Tile.EMPTY))).collect(Collectors.toSet());
+                            .allMatch(CrosswordBuilder::isComplete)).collect(Collectors.toSet());
 
             completeGrids.addAll(newlyCompletedCrosswords);
 
@@ -86,6 +86,12 @@ public class CrosswordBuilder {
         return completeGrids;
     }
 
+    private static boolean isIncomplete(PartialFill partialFill) {
+        return partialFill.getLetters().contains(Tile.EMPTY);
+    }
 
+    private static boolean isComplete(PartialFill fill) {
+        return !fill.getLetters().contains(Tile.EMPTY);
+    }
 
 }
