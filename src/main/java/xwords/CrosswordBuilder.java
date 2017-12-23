@@ -9,10 +9,7 @@ import xwords.wordset.WordSet;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /*
@@ -35,9 +32,27 @@ public class CrosswordBuilder {
                         .collect(Collectors.toSet())));
     }
 
+    private static int compare(Crossword o1, Crossword o2) {
+        return o2.filledTiles() - o1.filledTiles();
+    }
+
+    private static Long ratioOfCompleteness(PartialFill fill) {
+        return fill.getLetters().stream()
+                .filter(CrosswordBuilder::tileIsNotEmpty).count() / fill.getLetters().size();
+    }
+
+    private static boolean tileIsNotEmpty(Tile tile) {
+        return !tile.equals(Tile.EMPTY);
+    }
+
+    private static boolean gridIsComplete(Crossword potentialCrossword) {
+        return potentialCrossword.toPartialFill().stream()
+                .allMatch(CrosswordBuilder::fillIsComplete);
+    }
+
     public Set<Crossword> solveFromGrid(Crossword base) {
 
-        Queue<Crossword> incompleteGrids = new PriorityQueue<>((o1, o2) -> o2.filledTiles() - o1.filledTiles());
+        Queue<Crossword> incompleteGrids = new PriorityQueue<>(CrosswordBuilder::compare);
         Set<Crossword> visitedGrids = Sets.newHashSet();
         incompleteGrids.add(base);
 
@@ -55,7 +70,10 @@ public class CrosswordBuilder {
                     .collect(Collectors.toList());
 
             // choose a partial to fill
-            PartialFill partialFill = partialsOnly.iterator().next();
+            PartialFill partialFill = partialsOnly.stream().sorted(
+                    Comparator.comparing(CrosswordBuilder::ratioOfCompleteness))
+                    .findFirst().get();
+
 
             // find all valid fills
             Set<String> validFillOptions = wordSet.validWords(partialFill);
@@ -68,8 +86,7 @@ public class CrosswordBuilder {
 
             // identify complete crosswords
             Set<Crossword> newlyCompletedCrosswords = potentialCrosswords.stream()
-                    .filter(potentialCrossword -> potentialCrossword.toPartialFill().stream()
-                            .allMatch(CrosswordBuilder::fillIsComplete)).collect(Collectors.toSet());
+                    .filter(CrosswordBuilder::gridIsComplete).collect(Collectors.toSet());
 
             completeGrids.addAll(newlyCompletedCrosswords);
 
@@ -78,9 +95,10 @@ public class CrosswordBuilder {
             incompleteGrids.addAll(newIncompleteGrids);
         }
 
-
         return completeGrids;
     }
+
+
 
     private static boolean fillIsIncomplete(PartialFill partialFill) {
         return partialFill.getLetters().contains(Tile.EMPTY);
