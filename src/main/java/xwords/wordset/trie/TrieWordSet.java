@@ -1,6 +1,5 @@
 package xwords.wordset.trie;
 
-import com.google.common.collect.ImmutableSet;
 import xwords.PartialFill;
 import xwords.Tile;
 import xwords.wordset.WordSet;
@@ -8,6 +7,7 @@ import xwords.wordset.WordSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class TrieWordSet implements WordSet {
 
@@ -22,9 +22,10 @@ public class TrieWordSet implements WordSet {
         TrieNode root = new TrieNode("", false);
         for (String word : validWords) {
             TrieNode currentNode = root;
-            for (int i = 0; i < word.length(); i++) {
-                char character = word.charAt(i);
-                boolean isTerminal = i == (word.length() - 1);
+            String upperCaseWord = word.toUpperCase();
+            for (int i = 0; i < upperCaseWord.length(); i++) {
+                char character = upperCaseWord.charAt(i);
+                boolean isTerminal = i == (upperCaseWord.length() - 1);
                 if (currentNode.children().containsKey(character)) {
                     if (isTerminal) {
                         currentNode.setIsWordToTrue();
@@ -34,6 +35,7 @@ public class TrieWordSet implements WordSet {
                     String childPrefix = currentNode.prefix() + character;
                     TrieNode child = new TrieNode(childPrefix, isTerminal);
                     currentNode.children().put(character, child);
+                    currentNode = child;
                 }
             }
         }
@@ -43,34 +45,33 @@ public class TrieWordSet implements WordSet {
 
     @Override
     public Set<String> validWords(PartialFill partialFill) {
-        return validWordsHelper(partialFill.getTiles(), root);
+        return validWordsStream(partialFill.getTiles(), root).collect(Collectors.toSet());
     }
 
-    private Set<String> validWordsHelper(List<Tile> tiles, TrieNode node) {
+    private Stream<String> validWordsStream(List<Tile> tiles, TrieNode node) {
         if (tiles.isEmpty() && node.isWord()) {
-            return ImmutableSet.of(node.prefix());
+            return Stream.of(node.prefix());
         }
         if (tiles.isEmpty() && !node.isWord()) {
-            return ImmutableSet.of();
+            return Stream.empty();
         }
         Tile tile = tiles.get(0);
         List<Tile> remainingTiles = tiles.subList(1, tiles.size());
         if (tile.equals(Tile.EMPTY)) {
             return node.children().values().stream()
-                    .flatMap(childNode -> validWordsHelper(remainingTiles, childNode).stream())
-                    .collect(Collectors.toSet());
+                    .flatMap(childNode -> validWordsStream(remainingTiles, childNode));
         }
         Character character = tile.name().charAt(0);
         if (!node.children().containsKey(character)) {
-            return ImmutableSet.of();
+            return Stream.of();
         }
 
-        return validWordsHelper(tiles.subList(1, tiles.size()), node.children().get(character));
+        return validWordsStream(tiles.subList(1, tiles.size()), node.children().get(character));
     }
 
     @Override
     public boolean isWordFeasible(PartialFill partialFill) {
-        return false;
+        return validWordsStream(partialFill.getTiles(), root).findAny().isPresent();
     }
 
 
