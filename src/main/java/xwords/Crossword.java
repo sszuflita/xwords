@@ -10,9 +10,9 @@ public class Crossword {
     private final Tile[] tiles;
     private final int height;
     private final int width;
-    private final int score;
+    private final double score;
 
-    public Crossword(Tile[] tiles, int height, int width, int score) {
+    public Crossword(Tile[] tiles, int height, int width, double score) {
         this.tiles = tiles;
         this.height = height;
         this.width = width;
@@ -43,7 +43,7 @@ public class Crossword {
         return tiles[row * width + col];
     }
 
-    public int getScore() {
+    public double getScore() {
         return score;
     }
 
@@ -55,7 +55,7 @@ public class Crossword {
         Tile[] newTiles = new Tile[width * height];
         System.arraycopy(tiles, 0, newTiles, 0, width * height);
         fillPartial(partialFill, validWord, newTiles);
-        return new Crossword(newTiles, height, width, Math.min(this.score, score));
+        return new Crossword(newTiles, height, width, this.score + Math.log(score));
     }
 
     private void fillPartial(PartialFill partialFill, String validFill, Tile[] otherTiles) {
@@ -136,6 +136,7 @@ public class Crossword {
             for (int col = 0; col < width(); col++) {
                 Tile valueAtTile = getValueAtTile(row, col);
                 result.append(valueAtTile.toString());
+                result.append(" ");
             }
             result.append("\n");
         }

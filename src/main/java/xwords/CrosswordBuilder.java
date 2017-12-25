@@ -41,12 +41,7 @@ public class CrosswordBuilder {
     }
 
     public static int compare(Crossword o1, Crossword o2) {
-        int fillDifference = o2.filledTiles() - o1.filledTiles();
-        if (fillDifference != 0) {
-            return fillDifference;
-        }
-
-        return o2.getScore() - o1.getScore();
+        return (int) Math.round(Math.signum(o2.getScore() - o1.getScore()));
 
     }
 
@@ -130,7 +125,17 @@ public class CrosswordBuilder {
     }
 
     private boolean allFillIsValid(Crossword potentialCrossword) {
-        return potentialCrossword.toPartialFill().stream()
+        List<PartialFill> partialFills = potentialCrossword.toPartialFill();
+
+        boolean allWordsAreValid = partialFills.stream()
                 .allMatch(wordSet::isFillFeasible);
+
+        List<PartialFill> fullFills = partialFills.stream()
+                .filter(partialFill -> !partialFill.getTiles().contains(Tile.EMPTY))
+                .collect(Collectors.toList());
+
+        boolean areWordsAreUnique = (fullFills.size() == fullFills.stream().collect(Collectors.toSet()).size());
+
+        return allWordsAreValid && areWordsAreUnique;
     }
 }
