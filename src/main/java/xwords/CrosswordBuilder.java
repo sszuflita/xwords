@@ -40,8 +40,14 @@ public class CrosswordBuilder {
                                 .collect(Collectors.toSet()))));
     }
 
-    private static int compare(Crossword o1, Crossword o2) {
-        return o2.filledTiles() - o1.filledTiles();
+    public static int compare(Crossword o1, Crossword o2) {
+        int fillDifference = o2.filledTiles() - o1.filledTiles();
+        if (fillDifference != 0) {
+            return fillDifference;
+        }
+
+        return o2.getScore() - o1.getScore();
+
     }
 
     private static Double ratioOfCompleteness(PartialFill fill) {

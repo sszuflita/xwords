@@ -90,11 +90,16 @@ public class CrosswordBuilderBenchmarks {
         long totalTime = 0L;
         for (int i = 0; i < num_trials; i++) {
             Stopwatch started = Stopwatch.createStarted();
-            Set<Crossword> crosswords = builder.solveFromGrid(new Crossword(tiles, width, height, 0));
+            Set<Crossword> crosswords = builder.solveFromGrid(new Crossword(tiles, width, height, Integer.MAX_VALUE));
             started.stop();
             totalTime += started.elapsed(TimeUnit.MILLISECONDS);
             Assert.assertTrue(!crosswords.isEmpty());
-            System.out.println(crosswords.iterator().next());
+
+            Crossword first = crosswords.stream().max(CrosswordBuilder::compare).get();
+
+            System.out.println(first);
+            System.out.println("Score: " + first.getScore());
+
         }
         return totalTime;
     }

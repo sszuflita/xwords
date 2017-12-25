@@ -43,6 +43,10 @@ public class Crossword {
         return tiles[row * width + col];
     }
 
+    public int getScore() {
+        return score;
+    }
+
     private void setValueAtTile(int row, int col, Tile tile) {
         tiles[row * width + col] = tile;
     }
@@ -51,7 +55,7 @@ public class Crossword {
         Tile[] newTiles = new Tile[width * height];
         System.arraycopy(tiles, 0, newTiles, 0, width * height);
         fillPartial(partialFill, validWord, newTiles);
-        return new Crossword(newTiles, height, width, this.score + score);
+        return new Crossword(newTiles, height, width, Math.min(this.score, score));
     }
 
     private void fillPartial(PartialFill partialFill, String validFill, Tile[] otherTiles) {
