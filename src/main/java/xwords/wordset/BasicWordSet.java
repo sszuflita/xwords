@@ -9,18 +9,19 @@ import java.util.stream.Collectors;
 
 public class BasicWordSet implements WordSet {
 
-    private final Map<Integer, Set<String>> validWords;
+    private final Map<Integer, Set<ScoredWord>> validWords;
 
-    public BasicWordSet(Set<String> validWords) {
+    public BasicWordSet(Set<ScoredWord> validWords) {
         this.validWords = validWords.stream()
-                .collect(Collectors.groupingBy(String::length, Collectors.toSet()));
+                .collect(Collectors.groupingBy(scoredWord -> scoredWord.getWord().length(),
+                        Collectors.toSet()));
     }
 
     @Override
-    public Set<String> validWords(PartialFill partialFill) {
+    public Set<ScoredWord> validWords(PartialFill partialFill) {
         return validWords.get(partialFill.getTiles().size())
                 .parallelStream()
-                .filter(word -> matches(word, partialFill))
+                .filter(word -> matches(word.getWord(), partialFill))
                 .collect(Collectors.toSet());
     }
 
@@ -44,6 +45,6 @@ public class BasicWordSet implements WordSet {
         }
 
         return validWords.get(partialFill.getTiles().size()).stream()
-                .anyMatch(validWord -> matches(validWord, partialFill));
+                .anyMatch(validWord -> matches(validWord.getWord(), partialFill));
     }
 }

@@ -22,7 +22,7 @@ public class CrosswordBuilderTest {
                 Tile.EMPTY, Tile.EMPTY, Tile.EMPTY
         };
 
-        Set<Crossword> crosswords = builder.solveFromGrid(new Crossword(base, 3, 3));
+        Set<Crossword> crosswords = builder.solveFromGrid(new Crossword(base, 3, 3, 0));
 
         Assert.assertTrue(crosswords.size() > 0);
     }
@@ -38,7 +38,7 @@ public class CrosswordBuilderTest {
                 Tile.EMPTY, Tile.EMPTY, Tile.EMPTY
         };
 
-      Set<Crossword> crosswords = builder.solveFromGrid(new Crossword(base, 3, 3));
+      Set<Crossword> crosswords = builder.solveFromGrid(new Crossword(base, 3, 3, 0));
 
       Assert.assertTrue(crosswords.size() > 0);
     }
@@ -54,7 +54,7 @@ public class CrosswordBuilderTest {
                 Tile.R, Tile.EMPTY, Tile.EMPTY
         };
 
-        Set<Crossword> crosswords = builder.solveFromGrid(new Crossword(base, 3, 3));
+        Set<Crossword> crosswords = builder.solveFromGrid(new Crossword(base, 3, 3, 0));
 
         Assert.assertTrue(crosswords.size() > 0);
     }

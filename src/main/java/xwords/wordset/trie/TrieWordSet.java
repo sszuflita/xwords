@@ -2,40 +2,53 @@ package xwords.wordset.trie;
 
 import xwords.PartialFill;
 import xwords.Tile;
+import xwords.wordset.ScoredWord;
 import xwords.wordset.WordSet;
 
 import java.util.List;
+import java.util.Map;
+import java.util.OptionalInt;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class TrieWordSet implements WordSet {
 
-
     private final TrieNode root;
-    private final Set<String> validWords;
+    private final Map<String, ScoredWord> validWords;
 
-    public TrieWordSet(Set<String> validWords) {
+    public TrieWordSet(Set<ScoredWord> validWords) {
         this.root = buildTrie(validWords);
-        this.validWords = validWords;
+        this.validWords = validWords.stream().collect(Collectors.toMap(word -> word.getWord().toUpperCase(),
+                Function.identity()));
     }
 
-    private TrieNode buildTrie(Set<String> validWords) {
-        TrieNode root = new TrieNode("", false);
-        for (String word : validWords) {
+    private TrieNode buildTrie(Set<ScoredWord> validWords) {
+        TrieNode root = new TrieNode("", false, OptionalInt.empty());
+        for (ScoredWord word : validWords) {
             TrieNode currentNode = root;
-            String upperCaseWord = word.toUpperCase();
+            String upperCaseWord = word.getWord().toUpperCase();
             for (int i = 0; i < upperCaseWord.length(); i++) {
                 char character = upperCaseWord.charAt(i);
                 boolean isTerminal = i == (upperCaseWord.length() - 1);
                 if (currentNode.children().containsKey(character)) {
                     if (isTerminal) {
                         currentNode.setIsWordToTrue();
+                        currentNode.setScoreTo(word.getScore());
                     }
                     currentNode = currentNode.children().get(character);
                 } else {
                     String childPrefix = currentNode.prefix() + character;
-                    TrieNode child = new TrieNode(childPrefix, isTerminal);
+
+                    OptionalInt childScore;
+                    if (isTerminal) {
+                        childScore = OptionalInt.of(word.getScore());
+                    } else {
+                        childScore = OptionalInt.empty();
+                    }
+
+                    TrieNode child = new TrieNode(childPrefix, isTerminal, childScore);
                     currentNode.children().put(character, child);
                     currentNode = child;
                 }
@@ -46,13 +59,15 @@ public class TrieWordSet implements WordSet {
 
 
     @Override
-    public Set<String> validWords(PartialFill partialFill) {
+    public Set<ScoredWord> validWords(PartialFill partialFill) {
         return validWordsStream(partialFill.getTiles(), root).collect(Collectors.toSet());
     }
 
-    private Stream<String> validWordsStream(List<Tile> tiles, TrieNode node) {
+    private Stream<ScoredWord> validWordsStream(List<Tile> tiles, TrieNode node) {
         if (tiles.isEmpty() && node.isWord()) {
-            return Stream.of(node.prefix());
+            return Stream.of(
+                    new ScoredWord(node.prefix(), node.getScore().getAsInt())
+            );
         }
         if (tiles.isEmpty() && !node.isWord()) {
             return Stream.empty();
@@ -60,8 +75,8 @@ public class TrieWordSet implements WordSet {
 
         if (!tiles.contains(Tile.EMPTY)) {
             String potentialString = node.prefix() + tiles.stream().map(Tile::toString).collect(Collectors.joining());
-            if (validWords.contains(potentialString)) {
-                return Stream.of(potentialString);
+            if (validWords.containsKey(potentialString)) {
+                return Stream.of(validWords.get(potentialString));
             }
             return Stream.empty();
         }

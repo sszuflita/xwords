@@ -90,7 +90,7 @@ public class CrosswordBuilderBenchmarks {
         long totalTime = 0L;
         for (int i = 0; i < num_trials; i++) {
             Stopwatch started = Stopwatch.createStarted();
-            Set<Crossword> crosswords = builder.solveFromGrid(new Crossword(tiles, width, height));
+            Set<Crossword> crosswords = builder.solveFromGrid(new Crossword(tiles, width, height, 0));
             started.stop();
             totalTime += started.elapsed(TimeUnit.MILLISECONDS);
             Assert.assertTrue(!crosswords.isEmpty());

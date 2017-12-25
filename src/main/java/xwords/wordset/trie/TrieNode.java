@@ -3,24 +3,31 @@ package xwords.wordset.trie;
 import com.google.common.collect.Maps;
 
 import java.util.Map;
+import java.util.OptionalInt;
 
 public class TrieNode {
     private final String prefix;
     private boolean isWord;
     private final Map<Character, TrieNode> children;
+    private OptionalInt score;
 
-    TrieNode(String prefix, boolean isWord) {
+    TrieNode(String prefix, boolean isWord, OptionalInt score) {
         this.prefix = prefix;
         this.isWord = isWord;
         this.children = Maps.newHashMap();
+        this.score = score;
     }
 
     Map<Character, TrieNode> children() {
         return children;
     }
 
-    String prefix() {
+    public String prefix() {
         return prefix;
+    }
+
+    public OptionalInt getScore() {
+        return score;
     }
 
     boolean isWord() {
@@ -33,5 +40,9 @@ public class TrieNode {
 
     void setIsWordToTrue() {
         isWord = true;
+    }
+
+    public void setScoreTo(int newScore) {
+        score = OptionalInt.of(newScore);
     }
 }

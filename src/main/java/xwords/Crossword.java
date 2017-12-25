@@ -10,11 +10,13 @@ public class Crossword {
     private final Tile[] tiles;
     private final int height;
     private final int width;
+    private final int score;
 
-    public Crossword(Tile[] tiles, int height, int width) {
+    public Crossword(Tile[] tiles, int height, int width, int score) {
         this.tiles = tiles;
         this.height = height;
         this.width = width;
+        this.score = score;
     }
 
     public int filledTiles() {
@@ -45,11 +47,11 @@ public class Crossword {
         tiles[row * width + col] = tile;
     }
 
-    public Crossword withPartialFill(PartialFill partialFill, String validWord) {
+    public Crossword withPartialFill(PartialFill partialFill, String validWord, int score) {
         Tile[] newTiles = new Tile[width * height];
         System.arraycopy(tiles, 0, newTiles, 0, width * height);
         fillPartial(partialFill, validWord, newTiles);
-        return new Crossword(newTiles, height, width);
+        return new Crossword(newTiles, height, width, this.score + score);
     }
 
     private void fillPartial(PartialFill partialFill, String validFill, Tile[] otherTiles) {

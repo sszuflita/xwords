@@ -5,6 +5,7 @@ import com.google.common.collect.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xwords.wordset.CachingWordSet;
+import xwords.wordset.ScoredWord;
 import xwords.wordset.WordSet;
 import xwords.wordset.trie.TrieWordSet;
 
@@ -30,8 +31,12 @@ public class CrosswordBuilder {
         return new CrosswordBuilder(
                 new CachingWordSet(
                         new TrieWordSet(Files.lines(path)
-                                .map(word -> word.split(";")[0])
-                                .map(String::toUpperCase)
+                                .map(line -> {
+                                    String[] split = line.split(";");
+                                    String word = split[0].toUpperCase();
+                                    int score = Integer.parseInt(split[1]);
+                                    return new ScoredWord(word, score);
+                                })
                                 .collect(Collectors.toSet()))));
     }
 
@@ -88,10 +93,10 @@ public class CrosswordBuilder {
                         .get();
 
                 // find all valid fills
-                Set<String> validFillOptions = wordSet.validWords(partialFill);
+                Set<ScoredWord> validFillOptions = wordSet.validWords(partialFill);
 
                 return validFillOptions.parallelStream()
-                        .map(fill -> crossword.withPartialFill(partialFill, fill))
+                        .map(fill -> crossword.withPartialFill(partialFill, fill.getWord(), fill.getScore()))
                         .filter(potentialCrossword -> !visitedGrids.contains(potentialCrossword))
                         .filter(potentialCrossword -> allFillIsValid(potentialCrossword));
             }).collect(Collectors.toSet());

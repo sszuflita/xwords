@@ -10,7 +10,7 @@ import java.util.Set;
 public class CachingWordSet implements WordSet {
 
     private final LoadingCache<PartialFill, Boolean> isFillFeasibleCache;
-    private final LoadingCache<PartialFill, Set<String>> validWordsCache;
+    private final LoadingCache<PartialFill, Set<ScoredWord>> validWordsCache;
 
     public CachingWordSet(WordSet delegate) {
         this.validWordsCache = Caffeine.newBuilder()
@@ -22,7 +22,7 @@ public class CachingWordSet implements WordSet {
     }
 
     @Override
-    public Set<String> validWords(PartialFill partialFill) {
+    public Set<ScoredWord> validWords(PartialFill partialFill) {
         return validWordsCache.get(partialFill);
     }
 
