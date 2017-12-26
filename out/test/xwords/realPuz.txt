@@ -6,10 +6,10 @@ ULAM*ERASERHEAD
 DONATE**YESORNO
 ITALO*BARN**MTS
 ***LOCATIONS***
-___**____*_____
-_______**______
-__________*____
-_____**____*___
-___*___________
-___*_____*_____
-___*_____*_____
+ISO**ALVA*_____
+FANMAIL**______
+STEPINSIDE*____
+TINGS**ROTS*___
+ORE*LOTUSEATERS
+NES*EMILE*_____
+ESS*DATED*_____
