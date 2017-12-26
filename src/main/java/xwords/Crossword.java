@@ -143,6 +143,19 @@ public class Crossword {
         return result.toString();
     }
 
+    public String printFlipped() {
+        StringBuilder result = new StringBuilder();
+        for (int col = 0; col < width(); col++) {
+            for (int row = 0; row < height(); row++) {
+                Tile valueAtTile = getValueAtTile(row, col);
+                result.append(valueAtTile.toString());
+                result.append(" ");
+            }
+            result.append("\n");
+        }
+        return result.toString();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

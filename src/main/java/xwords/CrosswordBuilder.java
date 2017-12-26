@@ -1,5 +1,6 @@
 package xwords;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.slf4j.Logger;
@@ -63,6 +64,12 @@ public class CrosswordBuilder {
 
         Queue<Crossword> incompleteGrids = new PriorityQueue<>(CrosswordBuilder::compare);
         Set<Crossword> visitedGrids = Sets.newHashSet();
+
+        if (base.toPartialFill().stream().filter(partialFill -> partialFill.getTiles().contains(Tile.EMPTY))
+                .count() == 0) {
+            return ImmutableSet.of(base);
+        }
+
         incompleteGrids.add(base);
 
         Set<Crossword> completeGrids = Sets.newHashSet();

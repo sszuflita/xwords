@@ -97,10 +97,13 @@ public class CrosswordBuilderBenchmarks {
             totalTime += started.elapsed(TimeUnit.MILLISECONDS);
             Assert.assertTrue(!crosswords.isEmpty());
 
-
             List<Crossword> xword = crosswords.stream().sorted(CrosswordBuilder::compare).collect(Collectors.toList());
 
             System.out.println(xword.get(0));
+
+            System.out.println(xword.get(0).printFlipped());
+
+
             int a = 5;
 
         }
