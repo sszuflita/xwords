@@ -77,7 +77,7 @@ public class CrosswordBuilderBenchmarks {
         System.out.println(totalTime / numberOfTrials);
     }
 
-        @Test
+    @Test
     public void buildPuzzle() throws IOException {
         CrosswordBuilder builder = CrosswordBuilder.fromPath(path);
 
@@ -87,6 +87,16 @@ public class CrosswordBuilderBenchmarks {
         System.out.println(totalTime / numberOfTrials);
     }
 
+    @Test
+    public void testD() throws IOException {
+        CrosswordBuilder builder = CrosswordBuilder.fromPath(path);
+
+        Tile[] tiles = ParseUtils.fromPath(Paths.get("src/test/resources/d.txt"));
+
+        long totalTime = runTestInTrials(builder, tiles, 13, 13, numberOfTrials);
+        System.out.println(totalTime / numberOfTrials);
+
+    }
 
     private long runTestInTrials(CrosswordBuilder builder, Tile[] tiles, int width, int height, int num_trials) {
         long totalTime = 0L;
