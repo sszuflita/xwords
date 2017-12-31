@@ -2,8 +2,10 @@ package xwords;
 
 import com.google.common.collect.Lists;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Crossword {
 
@@ -127,6 +129,47 @@ public class Crossword {
         }
 
         return result;
+    }
+
+    public List<OrderedPartialFill> downs() {
+        return toSectionHelper(Orientation.DOWN);
+    }
+
+    public List<OrderedPartialFill> acrosses() {
+        return toSectionHelper(Orientation.ACROSS);
+    }
+
+    private List<OrderedPartialFill> toSectionHelper(Orientation orientation) {
+
+        List<PartialFill> sorted = toPartialFill().stream().sorted((o1, o2) -> {
+            int rowDiff = o1.getStartRow() - o2.getStartRow();
+            if (rowDiff != 0) {
+                return rowDiff;
+            }
+            return o1.getStartCol() - o2.getStartCol();
+        }).collect(Collectors.toList());
+
+        List<OrderedPartialFill> downs = new ArrayList<>();
+
+        int count = 1;
+
+        for (int i = 0; i < sorted.size(); i++) {
+
+            PartialFill fill = sorted.get(i);
+
+            if (i > 0) {
+                PartialFill lastFill = sorted.get(i - 1);
+                if (fill.getStartCol() != lastFill.getStartCol()
+                        || fill.getStartRow() != lastFill.getStartRow()) {
+                    count++;
+                }
+            }
+            if (fill.getOrientation().equals(orientation)) {
+                downs.add(new OrderedPartialFill(fill, count));
+            }
+        }
+
+        return downs;
     }
 
     @Override

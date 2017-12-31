@@ -81,7 +81,7 @@ public class CrosswordBuilderBenchmarks {
     public void buildPuzzle() throws IOException {
         CrosswordBuilder builder = CrosswordBuilder.fromPath(path);
 
-        Tile[] tiles = ParseUtils.fromPath(Paths.get("src/test/resources/realPuz.txt"));
+        Tile[] tiles = ParseUtils.fromPath(Paths.get("src/test/resources/realpuz/realPuz.txt"));
 
         long totalTime = runTestInTrials(builder, tiles, 15, 15, numberOfTrials);
         System.out.println(totalTime / numberOfTrials);
@@ -109,10 +109,7 @@ public class CrosswordBuilderBenchmarks {
 
             List<Crossword> xword = crosswords.stream().sorted(CrosswordBuilder::compare).collect(Collectors.toList());
 
-            System.out.println(xword.get(0));
-
-            System.out.println(xword.get(0).printFlipped());
-
+            PrintUtils.printPuzzle(xword.get(0));
 
             int a = 5;
 

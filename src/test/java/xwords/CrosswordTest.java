@@ -22,6 +22,30 @@ public class CrosswordTest {
                 Tile.A, Tile.A, Tile.A
         }, 3, 3, 0);
         Assert.assertEquals(abc, expected);
+
+        Assert.assertEquals(abc.downs(),
+                ImmutableList.of(
+                        new OrderedPartialFill(
+                                new PartialFill(ImmutableList.of(Tile.A, Tile.A, Tile.A), 0, 0, Orientation.DOWN),
+                                1),
+                        new OrderedPartialFill(
+                                new PartialFill(ImmutableList.of(Tile.B, Tile.A, Tile.A), 0, 0, Orientation.DOWN),
+                                2),
+                        new OrderedPartialFill(
+                                new PartialFill(ImmutableList.of(Tile.C, Tile.A, Tile.A), 0, 0, Orientation.DOWN),
+                                3)));
+
+              Assert.assertEquals(abc.acrosses(),
+                ImmutableList.of(
+                        new OrderedPartialFill(
+                                new PartialFill(ImmutableList.of(Tile.A, Tile.B, Tile.C), 0, 0, Orientation.DOWN),
+                                1),
+                        new OrderedPartialFill(
+                                new PartialFill(ImmutableList.of(Tile.A, Tile.A, Tile.A), 0, 0, Orientation.DOWN),
+                                4),
+                        new OrderedPartialFill(
+                                new PartialFill(ImmutableList.of(Tile.A, Tile.A, Tile.A), 0, 0, Orientation.DOWN),
+                                5)));
     }
 
 }
